@@ -1,0 +1,426 @@
+{
+  "info": {
+    "_postman_id": "40edac99-40bc-48e7-a7d5-28d60fee9fde",
+    "name": "FridayTest",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38014443"
+  },
+  "item": [
+    {
+      "name": "User Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData=pm.response.json();\r",
+              "let token=jsonData.token;\r",
+              "\r",
+              "pm.collectionVariables.set(\"token\",token)\r",
+              "\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"check whether login ok or not\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).contains(\"Login successful\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\":\"admin@dmoney.com\",\r\n    \"password\":\"1234\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User List",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"check whether login ok or not\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).contains(\"User list\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/list",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "list"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User Search",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"check whether user found or not\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).contains(\"User found\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/search/id/103687",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "search",
+            "id",
+            "103687"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User Create",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "let randomId=_.random(10000000,99999999);\r",
+              "let prefix=\"017\";\r",
+              "\r",
+              "let phone_number=prefix+randomId\r",
+              "\r",
+              "console.log(phone_number);\r",
+              "\r",
+              "pm.collectionVariables.set(\"UserNumber\",phone_number)"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData=pm.response.json();\r",
+              "let name=jsonData.user.name;\r",
+              "let email=jsonData.user.email;\r",
+              "\r",
+              "pm.collectionVariables.set(\"UserName\",name)\r",
+              "pm.collectionVariables.set(\"UserEmail\",email.toLowerCase())\r",
+              "\r",
+              "pm.test(\"Status code is 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"check whether user created or not\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).contains(\"User created\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "X-AUTH-SECRET-KEY",
+            "value": "{{secretKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"email\":\"test{{$randomInt}}@gmail.com\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{UserNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "create"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User Update",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"check whether user updated or not\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).contains(\"User updated\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "X-AUTH-SECRET-KEY",
+            "value": "{{secretKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n        \"name\": \"Guillermo Kerluke boss Sr.\",\r\n        \"email\": \"test940@gmail.com\",\r\n        \"password\": \"1234\",\r\n        \"phone_number\": \"01725280150\",\r\n        \"nid\": \"123456789\",\r\n        \"role\": \"Agent\"\r\n}\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/update/103687",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "update",
+            "103687"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User Update By Patch",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"check whether user correctly or not\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).contains(\"User updated successfully\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "X-AUTH-SECRET-KEY",
+            "value": "{{secretKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n        \"name\": \"Guillermo Kerluke boss Sr.Jr.\",\r\n        \"email\": \"test950@gmail.com\",\r\n        \"password\": \"12345\",\r\n        \"phone_number\": \"01725280155\",\r\n        \"nid\": \"123456789\",\r\n        \"role\": \"Agent+Customer\"\r\n}\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/update/103687",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "update",
+            "103687"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiYWRtaW5AZG1vbmV5LmNvbSIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc3NzYwNzMzOCwiZXhwIjoxNzc3NjEwOTM4fQ.POPQKRxHjkV-AbePxjJglcoLAxgKPxZ76RAgdFzDkG8"
+    },
+    {
+      "key": "baseUrl",
+      "value": " http://dmoney.roadtocareer.net"
+    },
+    {
+      "key": "secretKey",
+      "value": "ROADTOSDET"
+    },
+    {
+      "key": "UserNumber",
+      "value": "01720605170"
+    },
+    {
+      "key": "UserName",
+      "value": "Leslie Padberg"
+    },
+    {
+      "key": "UserEmail",
+      "value": "test695@gmail.com"
+    }
+  ]
+}
